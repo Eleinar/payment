@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QDate
 
-from modules import PaymentList, Categories, create_connection
+from modules import PaymentList, Categories, Users, create_connection
 
 from add_payment_window import AddPaymentWindow
 import generate_reports
@@ -98,11 +98,11 @@ class PaymentsWindow(QMainWindow):
             # Заполняем данные о платеже
             self.table.setItem(row_position, 0, QTableWidgetItem(payment.pay_name))
             self.table.setItem(row_position, 1, QTableWidgetItem(str(payment.pay_count)))
-            self.table.setItem(row_position, 2, QTableWidgetItem(f"{payment.pay_cost:.2f}"))
+            self.table.setItem(row_position, 2, QTableWidgetItem(f"{payment.pay_cost:.2f} р"))
 
             # Вычисляем сумму
             total = payment.pay_count * payment.pay_cost
-            self.table.setItem(row_position, 3, QTableWidgetItem(f"{total:.2f}"))
+            self.table.setItem(row_position, 3, QTableWidgetItem(f"{total:.2f} р"))
 
             # Категория платежа
             self.table.setItem(row_position, 4, QTableWidgetItem(payment.category_rel.category_name))
@@ -174,6 +174,7 @@ class PaymentsWindow(QMainWindow):
         self.load_payments()
 
     def generate_report(self):
-        generate_reports.generate_report(self, self.from_date, self.to_date, self.user_id)
+        user = self.db.query(Users).filter(Users.id == self.user_id).first()
+        generate_reports.generate_report(self, self.from_date, self.to_date, self.user_id, user.fio)
 
 

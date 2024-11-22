@@ -45,7 +45,7 @@ class PaymentList(Base):
     category_rel = relationship("Categories")
     
 def create_connection():
-    engine = create_engine("postgresql://postgres@localhost:5432/paymentdb", echo = True)
+    engine = create_engine("postgresql://admin:root@localhost:5432/paymentdb", echo = True)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session(bind=engine)
