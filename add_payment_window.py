@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
 )
 
 from modules import PaymentList, Categories, create_connection
+from datetime import datetime
 
 class AddPaymentWindow(QDialog):
     def __init__(self, parent, user_id):
@@ -49,21 +50,25 @@ class AddPaymentWindow(QDialog):
         self.cancel_button.clicked.connect(self.reject)
 
     def load_categories(self):
-        """Загрузка категорий в выпадающий список"""
+        # Загрузка категорий в выпадающий списокpay_
         db = create_connection()
         categories = db.query(Categories).all()
         for category in categories:
             self.category_combobox.addItem(category.category_name)
 
     def add_payment(self):
-        """Добавление платежа в базу данных"""
+        # Добавление платежа в базу данных
         name = self.name_input.text().strip()
         count = self.count_input.value()
         cost = self.cost_input.value()
         category_name = self.category_combobox.currentText()
 
-        if not name or category_name == "-":
+        if not name or category_name == "":
             QMessageBox.warning(self, "Ошибка", "Пожалуйста, заполните все поля!")
+            return
+        
+        if len(name) < 3:
+            QMessageBox.warning(self, "Ошибка", "Название должно быть длиннее трёх символов")
             return
 
         db = create_connection()
@@ -78,6 +83,7 @@ class AddPaymentWindow(QDialog):
             pay_name=name,
             pay_count=count,
             pay_cost=cost,
+            pay_day=datetime.today().strftime('%Y-%m-%d'),
             user_id=self.user_id,
             category_id=category.id
         )

@@ -54,6 +54,8 @@ class LoginWindow(QWidget):
         user = session.query(Users).filter_by(login=login).first()
 
         if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+            print("Введённый пароль:" + str(password.encode('utf-8')))
+            print("Пароль в базе: " + str(user.password.encode('utf-8')))
             QMessageBox.information(self, "Успех", f"Добро пожаловать, {user.fio}!")
             self.open_payments_window(user.id)
             

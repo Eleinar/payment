@@ -9,16 +9,17 @@ from modules import PaymentList, create_connection
 
 font_path = "DejaVuSans.ttf"
 
-def generate_report(self, start_date, end_date):
+def generate_report(self, start_date, end_date, user_id):
     # Запрос всех данных по платежам в выбранном периоде
     db = create_connection()
     
-    start_date = start_date.date().toPython()
-    end_date = end_date.date().toPython()
+    #start_date = start_date.date().toPython()
+    #end_date = end_date.date().toPython()
     
     payments = db.query(PaymentList).filter(
         PaymentList.pay_day >= start_date,
-        PaymentList.pay_day <= end_date
+        PaymentList.pay_day <= end_date,
+        PaymentList.user_id == user_id
     )
     if not payments:
         QMessageBox.warning(self, "Нет данных", "Нет платежей за выбранный период!")

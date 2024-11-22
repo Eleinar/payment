@@ -10,6 +10,7 @@ from add_payment_window import AddPaymentWindow
 import generate_reports
 
 
+
 class PaymentsWindow(QMainWindow):
     def __init__(self, user_id):
         super().__init__()
@@ -79,13 +80,13 @@ class PaymentsWindow(QMainWindow):
         self.load_payments()
 
     def load_categories(self):
-        """Загрузка категорий в выпадающий список"""
+        # Загрузка категорий в выпадающий список
         categories = self.db.query(Categories).all()
         for category in categories:
             self.category_combobox.addItem(category.category_name)
 
     def load_payments(self):
-        """Загрузка платежей из базы данных"""
+        # Загрузка платежей из базы данных
         
         payments = self.db.query(PaymentList).filter_by(user_id=self.user_id).all()
 
@@ -107,13 +108,13 @@ class PaymentsWindow(QMainWindow):
             self.table.setItem(row_position, 4, QTableWidgetItem(payment.category_rel.category_name))
 
     def add_payment(self):
-        """Открывает окно для добавления нового платежа"""
+        # Открывает окно для добавления нового платежа
         add_payment_window = AddPaymentWindow(self, self.user_id)
         if add_payment_window.exec():
             self.load_payments()  # Обновляем таблицу после добавления
 
     def delete_payment(self):
-        """Удаляет выбранный платеж"""
+        # Удаляет выбранный платеж
         selected_row = self.table.currentRow()
         if selected_row == -1:
             QMessageBox.warning(self, "Ошибка", "Не выбран платеж для удаления")
@@ -134,7 +135,7 @@ class PaymentsWindow(QMainWindow):
                 QMessageBox.information(self, "Удалено", "Платеж успешно удален")
 
     def apply_filters(self):
-        """Применяет фильтры для текущего пользователя."""
+        # Применяет фильтры для текущего пользователя.
         self.from_date = self.from_date.date().toPython()
         self.to_date = self.to_date.date().toPython()
         selected_category = self.category_combobox.currentText()
@@ -159,21 +160,20 @@ class PaymentsWindow(QMainWindow):
 
             self.table.setItem(row_position, 0, QTableWidgetItem(payment.pay_name))
             self.table.setItem(row_position, 1, QTableWidgetItem(str(payment.pay_count)))
-            self.table.setItem(row_position, 2, QTableWidgetItem(f"{payment.pay_cost:.2f}"))
+            self.table.setItem(row_position, 2, QTableWidgetItem(f"{payment.pay_cost:.2f} р."))
             total = payment.pay_count * payment.pay_cost
-            self.table.setItem(row_position, 3, QTableWidgetItem(f"{total:.2f}"))
+            self.table.setItem(row_position, 3, QTableWidgetItem(f"{total:.2f} р."))
             self.table.setItem(row_position, 4, QTableWidgetItem(payment.category_rel.category_name))
 
 
     def clear_filters(self):
-        """Сбрасывает фильтры"""
+        # Сбрасывает фильтры
         self.from_date.setDate(QDate.currentDate())
         self.to_date.setDate(QDate.currentDate())
         self.category_combobox.setCurrentIndex(0)
         self.load_payments()
 
     def generate_report(self):
-        """Генерация PDF-отчета"""
-        generate_reports.generate_report(self, self.from_date, self.to_date)
+        generate_reports.generate_report(self, self.from_date, self.to_date, self.user_id)
 
 
